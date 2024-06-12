@@ -9,6 +9,7 @@ public:
 private:
     void OnSendMessage(wxCommandEvent& event);
     void OnStopSpamMode(wxCommandEvent& event);
+    void OnSpamMode(wxCommandEvent& event);
 
     wxTextCtrl* textCtrl;
     wxTextCtrl* messageCtrl;

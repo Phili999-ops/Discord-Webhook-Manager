@@ -18,4 +18,6 @@ Discord Webhook Manager is a simple console application with a graphical user in
 ## Installation
 To compile make sure you have set the SubSystem to: Windows(/SUBSYSTEM:WINDOWS) in Configuration properties -> Linker -> System -> SubSystem
 
-If you don't want to compile then download the release.zip and extract everything in the same directory. The DLLS are required for the EXE to run
+If you don't want to compile then download the ReleaseV2.zip and extract everything in the same directory. The DLLS are required for the EXE to run.
+
+The spam mode sends 1 message in the span of 1 second. This is to avoid rate-limiting.

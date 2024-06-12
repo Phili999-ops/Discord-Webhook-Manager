@@ -2,13 +2,19 @@
 #include <iostream>
 #include <curl/curl.h>
 #include <string>
+#include <thread>
+#include <mutex>
+#include "Data_Definitions.h"
+#include "MainFrame.h"
 
-extern std::string WebhookURL; // The user's webhook URL
-extern std::string Message; // The user's message to the webhook
+std::mutex curl_mutex; // Mutex for thread safety
 
-void SendPOSTRequest() { // Function for sending POST request to discord's API
+void SendPOSTRequest() {
     CURL* curl;
     CURLcode res;
+
+    // Lock mutex for thread safety
+    std::lock_guard<std::mutex> lock(curl_mutex);
 
     // Initialize curl lib
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -44,4 +50,28 @@ void SendPOSTRequest() { // Function for sending POST request to discord's API
     }
 
     curl_global_cleanup();
+}
+
+void MainFrame::OnSendMessage(wxCommandEvent& event) {
+    WebhookURL = textCtrl->GetValue().ToStdString();
+    Message = messageCtrl->GetValue().ToStdString();
+    std::thread sendThread(SendPOSTRequest);
+    sendThread.detach();
+}
+
+void MainFrame::OnSpamMode(wxCommandEvent& event) {
+    WebhookURL = textCtrl->GetValue().ToStdString();
+    Message = messageCtrl->GetValue().ToStdString();
+    SpamMode = true;
+    std::thread spamThread([this]() {
+        while (SpamMode) {
+            SendPOSTRequest();
+            std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
+        }
+        });
+    spamThread.detach();
+}
+
+void MainFrame::OnStopSpamMode(wxCommandEvent& event) {
+    SpamMode = false;
 }
